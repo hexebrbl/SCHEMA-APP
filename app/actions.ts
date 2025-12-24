@@ -94,44 +94,75 @@ TASK: Determine if this is a TITLE or CONCEPT. Then:
 STRICT REQUIREMENTS:
 - Output exactly 5 items (no more, no less)
 - Never include sequels, prequels, spin-offs, or remakes
-- Include media_type, creator, title, analysis, structural_insight
-- Use Japanese for descriptions, English for labels (CATEGORY, media_type, etc.)
+- Include media_type, creator, title_ja, title_en, analysis, structural_insight, match_tags
+- Use Japanese for descriptions, English for labels
 ${filterConstraints}
 
-Return valid JSON array with exactly 5 objects. Each object must have:
+RESPONSE FORMAT (STRICT JSON):
 {
-  "title": "work title",
-  "creator": "author/director/artist",
-  "media_type": "MOVIE|BOOK|ART/PHOTO|HISTORY|MUSIC|DESIGN|...",
-  "analysis": "Japanese explanation of why this work relates to the input",
-  "structural_insight": "Objective analysis in Japanese of how this work exemplifies the theme"
+  "input_analysis_tags": ["Tag1", "Tag2", "Tag3"],
+  "results": [
+    {
+      "title_ja": "日本語タイトル",
+      "title_en": "English Title",
+      "creator": "author/director/artist",
+      "media_type": "MOVIE|BOOK|ART/PHOTO|HISTORY|MUSIC|DESIGN",
+      "analysis": "Japanese explanation of why this work relates to the input",
+      "structural_insight": "Objective analysis in Japanese",
+      "match_tags": ["SharedElement1", "SharedElement2"],
+      "imageUrl": null
+    }
+  ]
 }`;
 
   try {
     const result = await model.generateContent(prompt);
     const text = result.response.text();
     
-    // Parse JSON response - ensure we get exactly 5 items
-    let ideas = JSON.parse(text);
+    // Parse JSON response
+    const response = JSON.parse(text);
+    
+    // Extract data from new format
+    const inputAnalysisTags = response.input_analysis_tags || [];
+    let ideas = response.results || [];
     
     // Force exactly 5 items
-    if (Array.isArray(ideas)) {
-      ideas = ideas.slice(0, 5);
-    } else {
-      // If response is wrapped in an object, try to extract array
-      ideas = ideas.ideas || ideas.results || ideas.items || [ideas];
-      ideas = Array.isArray(ideas) ? ideas.slice(0, 5) : [ideas];
-    }
+    ideas = ideas.slice(0, 5);
 
-    return await Promise.all(ideas.map(async (item: any) => {
-      const imageUrl = await getBookImage(item.title, item.creator);
+    const enrichedResults = await Promise.all(ideas.map(async (item: any) => {
+      // Use title_ja first, fallback to title
+      const displayTitle = item.title_ja || item.title || "";
+      const originalTitle = item.title_en || item.title_en || "";
+      
+      const imageUrl = await getBookImage(
+        displayTitle || originalTitle,
+        item.creator
+      );
 
-      const amazonUrl = `https://www.amazon.co.jp/gp/search?ie=UTF8&tag=hexebrbl-22&keywords=${encodeURIComponent(item.title + " " + item.creator)}&index=blended&linkCode=ur2`;
+      const amazonUrl = `https://www.amazon.co.jp/gp/search?ie=UTF8&tag=hexebrbl-22&keywords=${encodeURIComponent(displayTitle + " " + item.creator)}&index=blended&linkCode=ur2`;
 
-      return { ...item, imageUrl, amazonUrl };
+      return {
+        title_ja: item.title_ja || item.title || "",
+        title_en: item.title_en || "",
+        creator: item.creator || "",
+        media_type: item.media_type || "",
+        analysis: item.analysis || "",
+        structural_insight: item.structural_insight || "",
+        match_tags: item.match_tags || [],
+        imageUrl,
+        amazonUrl,
+      };
     }));
+
+    return {
+      input_analysis_tags: inputAnalysisTags,
+      results: enrichedResults,
+    };
   } catch (error) {
     console.error("Error generating ideas:", error);
-    return [];
+    return {
+      input_analysis_tags: [],
+      results: [],
+    };
   }
 }

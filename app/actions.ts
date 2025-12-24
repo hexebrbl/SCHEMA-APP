@@ -87,17 +87,35 @@ export async function generateIdeas(
 
 User Input: "${query}"
 
+=== CRITICAL: TONE-MATCHING LOGIC (最優先事項) ===
+DETECT THE TONE OF THE INPUT WORK:
+1. Analyze if input is: Serious/Dark/Philosophical vs Pop/Light/Comedic/Cute/Kawaii
+2. Identify the "lightness level" (明るさ) and "playfulness" (ポップさ) of the input
+3. MATCH: All 5 recommended works MUST share SIMILAR TONE with the input
+   - Light input → Light recommendations (no heavy philosophical works)
+   - Dark input → Dark recommendations (no cute/comedic works)
+   - Pop input → Pop recommendations (school comedies, stylish designs, humor)
+
+TONE MATCHING EXAMPLES:
+✗ BAD: Input "School Comedy (Class Hierarchy)" → Output "Snowpiercer" (too dark/serious)
+✓ GOOD: Input "School Comedy" → Output "Mean Girls", "Persona 5", "Scott Pilgrim" (pop/stylish)
+
+✗ BAD: Input "Light Novel Romance" → Output "Crime and Punishment" (too philosophical)
+✓ GOOD: Input "Light Novel Romance" → Output "Bunny Girl Senpai", "Kaguya-sama Love is War", "Toradora" (light/comedic)
+
 TASK: Determine if this is a TITLE or CONCEPT. Then:
-- If TITLE: Exclude its series, sequels, and same genre. Propose 5 diverse works from different angles.
-- If CONCEPT: Find 5 masterpieces and reference materials embodying this concept across media types.
+- If TITLE: Exclude its series, sequels, and same genre. Propose 5 diverse CROSS-MEDIA works that MATCH THE INPUT TONE.
+- If CONCEPT: Find 5 masterpieces and reference materials embodying this concept across media types, maintaining the same tone/atmosphere.
 
 STRICT REQUIREMENTS:
 - Output exactly 5 items (no more, no less)
+- TONE MATCHING IS THE PRIMARY CONSTRAINT - prioritize tone alignment above all else
 - Never include sequels, prequels, spin-offs, or remakes
+- Vary media types (Movie, Book, Music, Art, History, Design, etc.) BUT preserve the atmosphere/tone
 - Include media_type, creator, title_ja, title_en, analysis, structural_insight, match_tags
 - Use Japanese for descriptions and ALL TAGS
 - Tags (input_analysis_tags and match_tags) MUST be generated in JAPANESE only (漢字、カタカナ、ひらがな)
-- Example: #Cyberpunk -> #サイバーパンク, <Isolation> -> <孤独>
+- Example: #Cyberpunk -> #サイバーパンク, <孤独> for isolation
 ${filterConstraints}
 
 RESPONSE FORMAT (STRICT JSON):
@@ -109,7 +127,7 @@ RESPONSE FORMAT (STRICT JSON):
       "title_en": "English Title",
       "creator": "author/director/artist",
       "media_type": "MOVIE|BOOK|ART/PHOTO|HISTORY|MUSIC|DESIGN",
-      "analysis": "Japanese explanation of why this work relates to the input",
+      "analysis": "Japanese explanation of why this work relates to the input (include tone match rationale)",
       "structural_insight": "Objective analysis in Japanese",
       "match_tags": ["日本語タグ1", "日本語タグ2"],
       "imageUrl": null

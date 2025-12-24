@@ -111,51 +111,51 @@ export default function Home() {
             {showFilters && (
               <div className="absolute top-16 right-0 w-80 bg-[#0a0a0a] border border-gray-800 rounded-xl p-6 shadow-2xl z-50 space-y-5 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-sm font-bold text-gray-100 uppercase tracking-widest">FILTERS</h3>
+                  <h3 className="text-sm font-bold text-gray-100 tracking-wide">フィルター</h3>
                   <button type="button" onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-gray-300">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Media Type</label>
+                  <label className="text-xs font-semibold text-gray-400 tracking-wide">媒体</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {["All", "Movie", "Book", "Art/Photo", "History"].map((opt) => (
-                      <button key={opt} type="button" onClick={() => setFilters({...filters, mediaType: opt})} className={`py-2 px-3 rounded text-xs font-semibold transition-all ${filters.mediaType === opt ? "bg-blue-600 text-white" : "bg-gray-900 text-gray-400 border border-gray-800"}`}>
-                        {opt}
+                    {[{key: "All", label: "すべて"}, {key: "Movie", label: "映画"}, {key: "Book", label: "書籍"}, {key: "Art/Photo", label: "美術・写真"}, {key: "History", label: "史実・場所"}].map((opt) => (
+                      <button key={opt.key} type="button" onClick={() => setFilters({...filters, mediaType: opt.key})} className={`py-2 px-3 rounded text-xs font-semibold transition-all ${filters.mediaType === opt.key ? "bg-blue-600 text-white" : "bg-gray-900 text-gray-400 border border-gray-800"}`}>
+                        {opt.label}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Era/Vibe</label>
+                  <label className="text-xs font-semibold text-gray-400 tracking-wide">年代・雰囲気</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {["All", "Classic(<1980)", "Modern(1980-2010)", "Current(2010+)"].map((opt) => (
-                      <button key={opt} type="button" onClick={() => setFilters({...filters, eraVibe: opt})} className={`py-2 px-3 rounded text-xs font-semibold transition-all ${filters.eraVibe === opt ? "bg-blue-600 text-white" : "bg-gray-900 text-gray-400 border border-gray-800"}`}>
-                        {opt}
+                    {[{key: "All", label: "すべて"}, {key: "Classic(<1980)", label: "古典 (~1980)"}, {key: "Modern(1980-2010)", label: "近代 (1980~)"}, {key: "Current(2010+)", label: "現代 (2010~)"}].map((opt) => (
+                      <button key={opt.key} type="button" onClick={() => setFilters({...filters, eraVibe: opt.key})} className={`py-2 px-3 rounded text-xs font-semibold transition-all ${filters.eraVibe === opt.key ? "bg-blue-600 text-white" : "bg-gray-900 text-gray-400 border border-gray-800"}`}>
+                        {opt.label}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Niche Level</label>
+                  <label className="text-xs font-semibold text-gray-400 tracking-wide">深度</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {["Major", "Deep(Maniac)"].map((opt) => (
-                      <button key={opt} type="button" onClick={() => setFilters({...filters, nicheLevel: opt})} className={`py-2 px-3 rounded text-xs font-semibold transition-all ${filters.nicheLevel === opt ? "bg-blue-600 text-white" : "bg-gray-900 text-gray-400 border border-gray-800"}`}>
-                        {opt}
+                    {[{key: "Major", label: "定番"}, {key: "Deep(Maniac)", label: "コア/カルト"}].map((opt) => (
+                      <button key={opt.key} type="button" onClick={() => setFilters({...filters, nicheLevel: opt.key})} className={`py-2 px-3 rounded text-xs font-semibold transition-all ${filters.nicheLevel === opt.key ? "bg-blue-600 text-white" : "bg-gray-900 text-gray-400 border border-gray-800"}`}>
+                        {opt.label}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Time</label>
+                  <label className="text-xs font-semibold text-gray-400 tracking-wide">ボリューム</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {["Quick(Music/Short)", "Standard(Movie/Book)", "Epic(Series)"].map((opt) => (
-                      <button key={opt} type="button" onClick={() => setFilters({...filters, time: opt})} className={`py-2 px-3 rounded text-xs font-semibold transition-all ${filters.time === opt ? "bg-blue-600 text-white" : "bg-gray-900 text-gray-400 border border-gray-800"}`}>
-                        {opt}
+                    {[{key: "Quick(Music/Short)", label: "短編 (~30分)"}, {key: "Standard(Movie/Book)", label: "標準 (映画・本)"}, {key: "Epic(Series)", label: "長編 (シリーズ)"}].map((opt) => (
+                      <button key={opt.key} type="button" onClick={() => setFilters({...filters, time: opt.key})} className={`py-2 px-3 rounded text-xs font-semibold transition-all ${filters.time === opt.key ? "bg-blue-600 text-white" : "bg-gray-900 text-gray-400 border border-gray-800"}`}>
+                        {opt.label}
                       </button>
                     ))}
                   </div>

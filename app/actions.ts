@@ -95,12 +95,14 @@ STRICT REQUIREMENTS:
 - Output exactly 5 items (no more, no less)
 - Never include sequels, prequels, spin-offs, or remakes
 - Include media_type, creator, title_ja, title_en, analysis, structural_insight, match_tags
-- Use Japanese for descriptions, English for labels
+- Use Japanese for descriptions and ALL TAGS
+- Tags (input_analysis_tags and match_tags) MUST be generated in JAPANESE only (漢字、カタカナ、ひらがな)
+- Example: #Cyberpunk -> #サイバーパンク, <Isolation> -> <孤独>
 ${filterConstraints}
 
 RESPONSE FORMAT (STRICT JSON):
 {
-  "input_analysis_tags": ["Tag1", "Tag2", "Tag3"],
+  "input_analysis_tags": ["日本語タグ1", "日本語タグ2", "日本語タグ3"],
   "results": [
     {
       "title_ja": "日本語タイトル",
@@ -109,7 +111,7 @@ RESPONSE FORMAT (STRICT JSON):
       "media_type": "MOVIE|BOOK|ART/PHOTO|HISTORY|MUSIC|DESIGN",
       "analysis": "Japanese explanation of why this work relates to the input",
       "structural_insight": "Objective analysis in Japanese",
-      "match_tags": ["SharedElement1", "SharedElement2"],
+      "match_tags": ["日本語タグ1", "日本語タグ2"],
       "imageUrl": null
     }
   ]

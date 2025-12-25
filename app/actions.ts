@@ -83,57 +83,68 @@ export async function generateIdeas(
       (filters.time ? `- Time Type: ${filters.time}\n` : "")
     : "";
 
-  const prompt = `You are SCHEMA, an intelligent curation engine.
+    // ★プロンプトエンジニアリング: 文脈に応じた書き分け指示
+    const prompt = `
+      あなたはプロの「メディア・キュレーター」です。
+      ユーザーの検索キーワード: "${query}"
+      
+      【フィルター条件】
+      - 媒体カテゴリー: ${filters?.mediaType} (※「書籍」には小説・画集・写真集が含まれます。「映画・映像」には映画・ドラマ・MVが含まれます)
+      - 年代・雰囲気: ${filters?.eraVibe}
+      - 深度: ${filters?.nicheLevel}
 
-User Input: "${query}"
+      【選定の鉄則（重要）】
+      キーワードの性質と、媒体の性質が矛盾しないように作品を選んでください。
 
-=== CRITICAL: TONE-MATCHING LOGIC (最優先事項) ===
-DETECT THE TONE OF THE INPUT WORK:
-1. Analyze if input is: Serious/Dark/Philosophical vs Pop/Light/Comedic/Cute/Kawaii
-2. Identify the "lightness level" (明るさ) and "playfulness" (ポップさ) of the input
-3. MATCH: All 5 recommended works MUST share SIMILAR TONE with the input
-   - Light input → Light recommendations (no heavy philosophical works)
-   - Dark input → Dark recommendations (no cute/comedic works)
-   - Pop input → Pop recommendations (school comedies, stylish designs, humor)
+      1. **キーワードが「物語・ストーリー」を求めている場合**
+         (例: "どんでん返し", "泣ける", "ミステリー", "伏線", "結末")
+         → **絶対に「画集」「写真集」「MV」「サントラ」を選ばないでください。**
+         → 必ず「小説」「漫画」「映画」「ドラマ」など、明確なストーリーがあるものを選んでください。
 
-TONE MATCHING EXAMPLES:
-✗ BAD: Input "School Comedy (Class Hierarchy)" → Output "Snowpiercer" (too dark/serious)
-✓ GOOD: Input "School Comedy" → Output "Mean Girls", "Persona 5", "Scott Pilgrim" (pop/stylish)
+      2. **キーワードが「雰囲気・ビジュアル」を求めている場合**
+         (例: "退廃的", "サイバーパンク", "美しい", "色彩", "癒やし")
+         → 「画集」「写真集」「MV」「映像美のある映画」を優先的に提案してください。
 
-✗ BAD: Input "Light Novel Romance" → Output "Crime and Punishment" (too philosophical)
-✓ GOOD: Input "Light Novel Romance" → Output "Bunny Girl Senpai", "Kaguya-sama Love is War", "Toradora" (light/comedic)
+      【解説（analysis）の書き方】
+      選んだ作品の「媒体」に合わせて、解説の視点を変えてください。
 
-TASK: Determine if this is a TITLE or CONCEPT. Then:
-- If TITLE: Exclude its series, sequels, and same genre. Propose 5 diverse CROSS-MEDIA works that MATCH THE INPUT TONE.
-- If CONCEPT: Find 5 masterpieces and reference materials embodying this concept across media types, maintaining the same tone/atmosphere.
+      - **小説・映画・漫画の場合**:
+        物語の構成や、テーマの深さを解説してください。
+      
+      - **画集・写真集・MVの場合**:
+        「あらすじ」は絶対に捏造しないでください。
+        代わりに「視覚的なトーン」「色彩」「構図」「空気感」「イマジネーションの源泉としての魅力」を解説してください。
 
-STRICT REQUIREMENTS:
-- Output exactly 5 items (no more, no less)
-- TONE MATCHING IS THE PRIMARY CONSTRAINT - prioritize tone alignment above all else
-- Never include sequels, prequels, spin-offs, or remakes
-- Vary media types (Movie, Book, Music, Art, History, Design, etc.) BUT preserve the atmosphere/tone
-- Include media_type, creator, title_ja, title_en, analysis, structural_insight, match_tags
-- Use Japanese for descriptions and ALL TAGS
-- Tags (input_analysis_tags and match_tags) MUST be generated in JAPANESE only (漢字、カタカナ、ひらがな)
-- Example: #Cyberpunk -> #サイバーパンク, <孤独> for isolation
-${filterConstraints}
+      === CRITICAL: TONE-MATCHING LOGIC (最優先事項) ===
+      DETECT THE TONE OF THE INPUT WORK:
+      1. Analyze if input is: Serious/Dark/Philosophical vs Pop/Light/Comedic/Cute/Kawaii
+      2. Identify the "lightness level" (明るさ) and "playfulness" (ポップさ) of the input
+      3. MATCH: All 5 recommended works MUST share SIMILAR TONE with the input
 
-RESPONSE FORMAT (STRICT JSON):
-{
-  "input_analysis_tags": ["日本語タグ1", "日本語タグ2", "日本語タグ3"],
-  "results": [
-    {
-      "title_ja": "日本語タイトル",
-      "title_en": "English Title",
-      "creator": "author/director/artist",
-      "media_type": "MOVIE|BOOK|ART/PHOTO|HISTORY|MUSIC|DESIGN",
-      "analysis": "Japanese explanation of why this work relates to the input (include tone match rationale)",
-      "structural_insight": "Objective analysis in Japanese",
-      "match_tags": ["日本語タグ1", "日本語タグ2"],
-      "imageUrl": null
-    }
-  ]
-}`;
+      STRICT REQUIREMENTS:
+      - Output exactly 5 items (no more, no less)
+      - Never include sequels, prequels, spin-offs, or remakes
+      - Include media_type, creator, title_ja, title_en, analysis, structural_insight, match_tags
+      - Use Japanese for descriptions and ALL TAGS
+      - Tags (input_analysis_tags and match_tags) MUST be generated in JAPANESE only
+
+      RESPONSE FORMAT (STRICT JSON):
+      {
+        "input_analysis_tags": ["日本語タグ1", "日本語タグ2", "日本語タグ3"],
+        "results": [
+          {
+            "title_ja": "作品名",
+            "title_en": "English Title",
+            "creator": "author/director/artist",
+            "media_type": "正確な媒体名（例: 画集、SF小説、MV）",
+            "analysis": "媒体に合わせた魅力の解説（100文字程度）",
+            "structural_insight": "客観的分析（日本語）",
+            "match_tags": ["タグ1", "タグ2"],
+            "imageUrl": null
+          }
+        ]
+      }
+    `;
 
   try {
     const result = await model.generateContent(prompt);

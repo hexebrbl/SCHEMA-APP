@@ -159,7 +159,7 @@ RESPONSE FORMAT (STRICT JSON):
         item.creator
       );
 
-      const amazonUrl = `https://www.amazon.co.jp/gp/search?ie=UTF8&tag=hexebrbl-22&keywords=${encodeURIComponent(displayTitle + " " + item.creator)}&index=blended&linkCode=ur2`;
+      const amazonUrl = `https://www.amazon.co.jp/s?k=${encodeURIComponent(displayTitle + " " + item.creator)}`;
 
       return {
         title_ja: item.title_ja || item.title || "",

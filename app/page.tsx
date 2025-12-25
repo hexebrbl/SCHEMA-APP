@@ -101,7 +101,10 @@ export default function Home() {
           <form onSubmit={handleSearch}>
             <div className="relative flex items-center bg-[#0a0a0a] border border-gray-800 rounded-xl p-2 shadow-2xl group hover:border-blue-500/50 transition-all">
               <Search className="w-6 h-6 text-gray-500 ml-3" />
-              <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="作品名、概念、ヴァイブを入力... (例: AKIRA, Cyberpunk, 孤独)" style={{ color: 'white', backgroundColor: 'transparent' }} className="w-full border-none text-base px-4 py-3 focus:outline-none placeholder-gray-600" />
+              <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="作品名、概念、ヴァイブを入力... (例: AKIRA, Cyberpunk, 孤独)" style={{ color: 'white', backgroundColor: 'transparent' }} className="w-full border-none text-base px-4 py-3 focus:outline-none placeholder-gray-600" disabled={isSearching} />
+              <button type="submit" disabled={isSearching} className="mr-3 p-2 text-gray-500 hover:text-blue-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                {isSearching ? <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /> : <Search className="w-5 h-5" />}
+              </button>
               <button type="button" onClick={() => setShowFilters(!showFilters)} className="mr-3 p-2 text-gray-500 hover:text-blue-400 transition-colors">
                 <SlidersHorizontal className="w-5 h-5" />
               </button>

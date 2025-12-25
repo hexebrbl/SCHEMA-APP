@@ -1,0 +1,96 @@
+// フィルターの初期設定
+let currentFilters = {
+  media: 'all',
+  era: 'all',
+  depth: 'famous',
+  volume: 'standard'
+};
+
+// フィルターボタンの切り替え処理
+function setFilter(category, value, btnElement) {
+  currentFilters[category] = value;
+  const buttons = btnElement.parentElement.querySelectorAll('button');
+  buttons.forEach(btn => btn.classList.remove('active'));
+  btnElement.classList.add('active');
+}
+
+// アイデア生成のメイン処理
+async function generateIdeas() {
+  const userInput = document.getElementById('userInput').value;
+  const resultsArea = document.getElementById('resultsArea');
+  const generateBtn = document.getElementById('generateBtn');
+
+  if (!userInput) {
+    alert("キーワードを入力してください");
+    return;
+  }
+
+  // ★連打防止: ボタンを無効化
+  generateBtn.disabled = true;
+  generateBtn.innerHTML = '<div class="loader"></div>';
+
+  resultsArea.innerHTML = '';
+  resultsArea.classList.remove('hidden');
+
+  try {
+    const response = await fetch('/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        keyword: userInput,
+        filters: currentFilters
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      alert("エラーが発生しました: " + data.error);
+    } else {
+      displayResults(data.ideas);
+    }
+
+  } catch (error) {
+    console.error('Error:', error);
+    alert("通信エラーが発生しました。時間を置いて再度試してください。");
+  } finally {
+    // ★処理完了: ボタンを有効化
+    generateBtn.disabled = false;
+    generateBtn.innerHTML = '<span>GENERATE</span>';
+  }
+}
+
+// 結果表示処理
+function displayResults(ideas) {
+  const resultsArea = document.getElementById('resultsArea');
+
+  ideas.forEach(idea => {
+    // ★Amazon検索結果URLへのリンクに変更
+    const amazonSearchUrl = `https://www.amazon.co.jp/s?k=${encodeURIComponent(idea.title)}`;
+
+    const card = document.createElement('div');
+    card.className = 'glass-panel p-6 rounded-xl hover:bg-gray-800/50 transition-all border border-gray-700/50';
+    
+    card.innerHTML = `
+      <div class="flex justify-between items-start mb-3">
+        <span class="text-xs font-bold text-blue-400 bg-blue-900/30 px-2 py-1 rounded border border-blue-500/20">
+          ${idea.category || 'RECOMMEND'}
+        </span>
+        <a href="${amazonSearchUrl}" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fa-brands fa-amazon text-xl"></i>
+        </a>
+      </div>
+      <h3 class="text-xl font-bold text-white mb-2 leading-relaxed">${idea.title}</h3>
+      <p class="text-gray-400 text-sm leading-relaxed mb-4">${idea.reason}</p>
+      
+      <div class="pt-4 border-t border-gray-700/50 flex justify-between items-center">
+         <span class="text-xs text-gray-500">MATCH RATE</span>
+         <span class="text-sm font-bold text-green-400">98%</span>
+      </div>
+    `;
+    
+    resultsArea.appendChild(card);
+  });
+}

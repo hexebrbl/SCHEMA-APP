@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
 export async function generateIdeas(
   keyword: string,
   filters: any,
-  mode: 'narrative' | 'visual' // モードを受け取るように明記
+  mode: 'narrative' | 'visual' = 'narrative'
 ) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -19,7 +19,7 @@ export async function generateIdeas(
         【重要：Narrativeモードの絶対ルール】
         ユーザーは「物語（ストーリー）」を求めています。
         1. **小説、映画、ドラマ、アニメ、漫画、ゲーム（ストーリー重視）** の中から選んでください。
-        2. **「画集」「写真集」「音楽」「サントラ」は絶対に選ばないでください（禁止）。**
+        2. **「画集」「写真集」「音楽」「サントラ」「楽器」は絶対に選ばないでください（禁止）。**
         3. 解説は「あらすじ」「プロットの面白さ」「テーマ性」に焦点を当ててください。
       `;
     } else {
@@ -38,17 +38,17 @@ export async function generateIdeas(
       【検索条件】
       - キーワード: "${keyword}"
       - モード: ${mode.toUpperCase()} (重要！)
-      - 媒体フィルター: ${filters.media}
+      - 媒体フィルター: ${filters.media} (「すべて」の場合はモードのルールに従う)
       - 年代: ${filters.era}
       - 深度: ${filters.depth}
 
       ${modeInstruction}
 
       【出力データのルール（厳守）】
-      1. **title**: 作品名のみを書いてください。「(映画)」「(Artist)」などの補足は**絶対に**書かないでください。Amazon検索が失敗します。
-         - OK例: "AKIRA", "Yunomi"
-         - NG例: "AKIRA (映画)", "Yunomi (Artist)"
-      2. **author**: 作者・監督・アーティスト名を書いてください。
+      1. **title**: 作品名のみを書いてください。「(映画)」「(Artist)」や作者名は**絶対に**含めないでください。Amazon検索が失敗します。
+         - OK例: "AKIRA", "君の名は。", "Slam Dunk"
+         - NG例: "AKIRA (映画)", "君の名は。 (新海誠)", "Slam Dunk (漫画)"
+      2. **author**: 作者・監督・アーティスト名をここに書いてください。
       3. **category**: 具体的な媒体名（例: SF小説、画集、テクノ音楽）。
       4. **reason**: モード（Narrative/Visual）に合わせた魅力の解説（日本語で100文字程度）。
 

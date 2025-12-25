@@ -118,10 +118,28 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-xs font-semibold text-gray-400 tracking-wide">媒体</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[{key: "All", label: "すべて"}, {key: "Movie", label: "映画"}, {key: "Book", label: "書籍"}, {key: "Art/Photo", label: "美術・写真"}, {key: "History", label: "史実・場所"}].map((opt) => (
-                      <button key={opt.key} type="button" onClick={() => setFilters({...filters, mediaType: opt.key})} className={`py-2 px-3 rounded text-xs font-semibold transition-all ${filters.mediaType === opt.key ? "bg-blue-600 text-white" : "bg-gray-900 text-gray-400 border border-gray-800"}`}>
+                  <label className="text-xs font-semibold text-gray-400 tracking-wide uppercase flex items-center gap-2">
+                    <BookOpen className="w-3 h-3" /> 媒体カテゴリー
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { key: "All", label: "すべて" },
+                      { key: "映画・映像", label: "映画・映像" },
+                      { key: "アニメ", label: "アニメ" },
+                      { key: "マンガ", label: "マンガ" },
+                      { key: "書籍", label: "書籍" },
+                      { key: "ゲーム", label: "ゲーム" }
+                    ].map((opt) => (
+                      <button
+                        key={opt.key}
+                        type="button"
+                        onClick={() => setFilters({ ...filters, mediaType: opt.key })}
+                        className={`py-3 px-2 rounded-lg text-xs font-medium transition-all border ${
+                          filters.mediaType === opt.key
+                            ? "bg-gray-800 text-white border-blue-500 shadow-lg shadow-blue-500/10"
+                            : "bg-gray-900/50 text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-gray-200"
+                        }`}
+                      >
                         {opt.label}
                       </button>
                     ))}

@@ -10,7 +10,8 @@ export async function generateIdeas(
   mode: 'narrative' | 'visual' = 'narrative'
 ) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // 【修正点】ご指定の最新モデル Gemini 3 Flash に変更しました
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash" });
 
     // モードに応じた厳格なルール定義
     let modeInstruction = "";
@@ -80,6 +81,7 @@ export async function generateIdeas(
 
   } catch (error) {
     console.error('Generative AI Error:', error);
-    return { error: 'Failed to generate ideas' };
+    // エラー内容を詳細に返す（デバッグ用）
+    return { error: `Failed to generate ideas. Reason: ${error instanceof Error ? error.message : 'Unknown error'}` };
   }
 }
